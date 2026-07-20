@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>FalconEye Digital Twin</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <header class="top-bar">
+    <div class="logo">FalconEye <span>Conservation AI</span></div>
+    <div style="display:flex; gap:10px;">
+        <button id="btn-theme" class="key-btn" style="padding:5px 10px;">🌗 High Contrast</button>
+        <button id="btn-csv" class="key-btn" style="padding:5px 10px;">📊 Download Data</button>
+    </div>
+    <div class="global-status">
+      <span class="status-badge" id="conn-status">Disconnected</span>
+      <span class="status-badge idle" id="robot-state">Idle</span>
+    </div>
+  </header>
+
+  <div class="layout">
+    <!-- Left Column: Vision & Detections -->
+    <div class="panel left-panel">
+      <div class="card">
+        <h3>Live Camera</h3>
+        <div class="cam-container">
+          <img id="video-feed" src="http://localhost:8080/video_feed" alt="Stream Offline">
+          <div class="cam-overlay">
+            <span id="cam-fps">0 FPS</span> | <span id="cam-res">640x480</span>
+          </div>
+        </div>
+        <div style="margin-top:10px; display:flex; gap:10px;">
+          <button id="btn-snap" style="flex:1; padding:5px; background:#333; color:#fff; border:1px solid #555; cursor:pointer;">📸 Snapshot</button>
+          <button id="btn-rec" style="flex:1; padding:5px; background:#5a1010; color:#fff; border:1px solid #f44336; cursor:pointer;">⏺ Record 10s</button>
+        </div>
+        <div class="stat" style="margin-top:10px;">
+          <label>AI Vision Confidence</label>
+          <div class="progress-bar"><div class="fill" id="conf-fill" style="width: 0%; background: linear-gradient(90deg, #ff3366, #00ff88);"></div></div>
+        </div>
+      </div>
+      <div class="card" id="collision-warn" style="display:none; background:#5a1010; border-color:#f44336;">
+        <h3 style="color:#fff; text-align:center; margin:0;">⚠️ COLLISION WARNING</h3>
+      </div>
+      <div class="card">
+        <h3>Detection Log</h3>
+        <ul class="detection-list" id="det-list"></ul>
+      </div>
+    </div>
+
+    <!-- Center Column: Digital Twin Map -->
+    <div class="panel center-panel">
+      <div class="card map-card">
+        <h3>Digital Twin (2D Top-Down)</h3>
+        <div class="map-container">
+          <canvas id="twin-canvas" width="600" height="600"></canvas>
+        </div>
+        <div class="map-legend">
+          <span>Target: <strong id="tgt-name">None</strong></span>
+          <span>Req. Heading: <strong id="tgt-hdg">0°</strong></span>
+          <span>Est. Distance: <strong id="tgt-dist">0m</strong></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Column: Status, Controls, Logs -->
+    <div class="panel right-panel">
+      <div class="card">
+        <h3>Ecosystem Health</h3>
+        <div style="font-size:3rem; text-align:center; color:#00ff88; font-weight:bold; margin: 10px 0;" id="chhi-score">100</div>
+        <div style="text-align:center; font-size:0.8rem; color:#aaa;">CHHI Score</div>
+        <div style="margin-top:10px; width:100%; height:80px; position: relative;">
+          <canvas id="chhi-chart"></canvas>
+        </div>
+        <div style="display:flex; gap:5px; margin-top:15px;">
+            <button id="btn-sim-bird" style="flex:1; padding:5px; background:#1b5e20; color:#fff; border:1px solid #4caf50; cursor:pointer; font-size:0.75rem;">+ Bird (CHHI)</button>
+            <button id="btn-sim-trash" style="flex:1; padding:5px; background:#b71c1c; color:#fff; border:1px solid #f44336; cursor:pointer; font-size:0.75rem;">- Trash (CHHI)</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>System Status</h3>
+        <ul class="sys-stats">
+          <li>Pi CPU: <span id="pi-cpu">0%</span></li>
+          <li>Pi RAM: <span id="pi-ram">0%</span></li>
+          <li>Robot Pos: <span id="bot-pos">X:0 Y:0</span></li>
+          <li>Robot Hdg: <span id="bot-hdg">0°</span></li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <h3>Mission Queue</h3>
+        <select id="target-select" style="margin-bottom:10px; padding:5px; background:#333; color:#fff; border:1px solid #555;">
+          <option value="-1">Select Destination...</option>
+        </select>
+        <div style="display:flex; gap:5px;">
+            <button id="btn-queue" style="flex:1; padding:5px; background:#00d2ff; color:#000; border:none; cursor:pointer; font-weight:bold;">Add to Queue</button>
+            <button id="btn-clear-q" style="padding:5px; background:#333; color:#fff; border:1px solid #555; cursor:pointer;">Clear</button>
+        </div>
+        <ul id="queue-list" style="list-style:none; padding:5px; font-size:0.8rem; color:#aaa; margin-top:5px;"></ul>
+      </div>
+
+      <div class="card">
+        <h3>Manual Control</h3>
+        <div class="wasd-pad">
+          <button class="key-btn" data-key="W">W</button><br>
+          <button class="key-btn" data-key="A">A</button>
+          <button class="key-btn" data-key="S">S</button>
+          <button class="key-btn" data-key="D">D</button>
+          <br>
+          <button class="key-btn space" data-key="SPACE">SPACE (STOP)</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Event Log</h3>
+        <ul class="event-log" id="event-log"></ul>
+      </div>
+    </div>
+  </div>
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,9 @@
+[
+  {"id": 0, "name": "Home", "x": 0, "y": 0, "description": "Start Position"},
+  {"id": 1, "name": "Station A", "x": 2.0, "y": 2.0, "description": "First Waypoint"},
+  {"id": 2, "name": "Station B", "x": 4.0, "y": 0, "description": "Second Waypoint"},
+  {"id": 3, "name": "Station C", "x": 4.0, "y": -2.0, "description": "Third Waypoint"},
+  {"id": 4, "name": "Charging Station", "x": 0, "y": -2.0, "description": "Power"},
+  {"id": 5, "name": "Inspection Point", "x": 2.0, "y": 0, "description": "Inspection"},
+  {"id": 6, "name": "Goal", "x": 2.0, "y": -4.0, "description": "Final"}
+]

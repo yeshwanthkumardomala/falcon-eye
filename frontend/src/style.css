@@ -1,0 +1,52 @@
+* { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Roboto Mono', monospace; }
+body { background-color: #121212; color: #e0e0e0; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+.top-bar { display: flex; justify-content: space-between; align-items: center; background: #1e1e1e; padding: 10px 20px; border-bottom: 1px solid #333; }
+.logo { font-weight: 700; font-size: 1.2rem; color: #00d2ff; }
+.logo span { color: #888; font-weight: 400; font-size: 0.9rem; }
+.status-badge { background: #333; padding: 4px 10px; border-radius: 4px; font-size: 0.8rem; margin-left: 10px; text-transform: uppercase; font-weight:bold; }
+.status-badge.connected { background: #1b5e20; color: #a5d6a7; }
+.status-badge.idle { background: #424242; color:#ccc; }
+.status-badge.moving { background: #01579b; color:#81d4fa; }
+.status-badge.error { background: #b71c1c; color:#ffcdd2; }
+.status-badge.searching { background: #e65100; color:#ffe0b2; }
+
+.layout { display: grid; grid-template-columns: 350px 1fr 300px; gap: 10px; padding: 10px; flex-grow: 1; height: calc(100vh - 50px); }
+.panel { display: flex; flex-direction: column; gap: 10px; overflow-y: auto; }
+.card { background: #1e1e1e; border: 1px solid #333; border-radius: 6px; padding: 15px; display: flex; flex-direction: column; }
+.card h3 { font-size: 0.9rem; color: #888; text-transform: uppercase; margin-bottom: 10px; border-bottom: 1px solid #333; padding-bottom: 5px; }
+
+/* Camera */
+.cam-container { position: relative; width: 100%; aspect-ratio: 4/3; background: #000; border-radius: 4px; overflow: hidden; }
+.cam-container img { width: 100%; height: 100%; object-fit: cover; }
+.cam-overlay { position: absolute; top: 5px; left: 5px; background: rgba(0,0,0,0.6); font-size: 0.75rem; padding: 2px 6px; border-radius: 2px; }
+
+/* Map */
+.map-card { flex-grow: 1; display: flex; flex-direction: column; }
+.map-container { flex-grow: 1; display: flex; justify-content: center; align-items: center; background: #0a0a0a; border: 1px solid #222; border-radius: 4px; position: relative; overflow:hidden;}
+canvas { max-width: 100%; max-height: 100%; object-fit: contain; }
+.map-legend { display: flex; justify-content: space-between; font-size: 0.8rem; padding-top: 10px; color: #aaa; }
+.map-legend strong { color: #00d2ff; }
+
+/* Controls */
+.wasd-pad { text-align: center; }
+.key-btn { background: #333; color: #fff; border: 1px solid #555; padding: 10px 15px; margin: 3px; border-radius: 4px; cursor: pointer; font-weight: bold; transition:0.1s; }
+.key-btn:active, .key-btn.active { background: #00d2ff; color: #000; border-color: #00d2ff; }
+.key-btn.space { width: 100%; margin-top: 10px; background: #5a1010; border-color: #f44336; }
+.key-btn.space:active, .key-btn.space.active { background: #f44336; }
+
+/* Logs */
+.event-log, .detection-list, .sys-stats { list-style: none; font-size: 0.8rem; max-height: 200px; overflow-y: auto; color: #bbb; }
+.event-log li, .sys-stats li, .detection-list li { margin-bottom: 5px; padding-bottom:5px; border-bottom:1px solid #333;}
+.event-log li.highlight { color: #00ff88; }
+.event-log li.error { color: #ff3366; }
+
+/* High Contrast Theme */
+body.high-contrast { background-color: #ffffff; color: #000000; }
+body.high-contrast .top-bar, body.high-contrast .card { background: #f0f0f0; border-color:#000; color:#000; }
+body.high-contrast .map-container { background: #ffffff; border-color:#000; }
+body.high-contrast h3 { color: #000; border-color:#000; }
+body.high-contrast .status-badge { color:#000 !important; font-weight:900; }
+body.high-contrast .status-badge.connected { background: #00ff00; }
+body.high-contrast .status-badge.idle { background: #ccc; }
+body.high-contrast .key-btn { background: #ddd; color: #000; border-color: #000; }
+body.high-contrast .key-btn:active { background: #000; color: #fff; }
