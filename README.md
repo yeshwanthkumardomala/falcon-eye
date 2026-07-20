@@ -62,6 +62,22 @@ chmod +x start.sh
 Once started, simply open your browser and navigate to:
 👉 **http://localhost:5173**
 
+### 4. 🍓 Raspberry Pi 3B+ Hardware Setup (Robot Camera)
+The FalconEye AI expects a live video stream from the robot over the local network. 
+
+1. Install Python and OpenCV on your Raspberry Pi 3B+:
+   ```bash
+   sudo apt update
+   sudo apt install python3-opencv python3-pip
+   ```
+2. Copy the `pi/` directory from this repository to your Raspberry Pi.
+3. Run the camera streamer on the Pi:
+   ```bash
+   cd pi
+   python3 main.py
+   ```
+4. The Pi will broadcast the raw camera feed to `http://<PI_IP_ADDRESS>:8000/video_feed`. The laptop backend automatically connects to this stream and processes the AI locally!
+
 ---
 
 ## 📸 Dashboard Preview & Demo
