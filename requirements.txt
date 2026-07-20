@@ -1,0 +1,7 @@
+fastapi==0.110.0
+uvicorn==0.27.1
+websockets==12.0
+opencv-python==4.9.0.80
+pupil-apriltags==1.0.4.post2
+ultralytics==8.1.24
+requests==2.31.0
