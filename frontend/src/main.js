@@ -41,6 +41,22 @@ document.addEventListener('DOMContentLoaded', async () => {
     logEvent("Litter Detected! CHHI -10", "error");
   });
   
+  document.getElementById('btn-toggle-yolo').addEventListener('click', () => {
+    const yolo = document.getElementById('yolo-container');
+    if (yolo.style.display === 'none') {
+      yolo.style.display = 'block';
+    } else {
+      yolo.style.display = 'none';
+    }
+  });
+  
+  // Debug Reconnect
+  document.getElementById('btn-restart').addEventListener('click', () => {
+    document.getElementById('video-feed').src = "http://localhost:8080/video_feed?" + new Date().getTime();
+    document.getElementById('video-feed-yolo').src = "http://localhost:8080/video_feed_yolo?" + new Date().getTime();
+    logEvent("Reconnecting to AI Cameras...", "info");
+  });
+  
   // DVR Handlers
   document.getElementById('btn-snap').addEventListener('click', async () => {
     logEvent("Requesting Snapshot...", "highlight");

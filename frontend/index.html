@@ -21,14 +21,25 @@
 
   <div class="layout">
     <!-- Left Column: Vision & Detections -->
-    <div class="panel left-panel">
+    <!-- Left Column: Vision & Detections -->
+    <div class="panel left-panel" style="flex:1.5;">
       <div class="card">
-        <h3>Live Camera</h3>
-        <div class="cam-container">
-          <img id="video-feed" src="http://localhost:8080/video_feed" alt="Stream Offline">
-          <div class="cam-overlay">
-            <span id="cam-fps">0 FPS</span> | <span id="cam-res">640x480</span>
+        <h3 style="display:flex; justify-content:space-between; align-items:center;">
+          Live Cameras 
+          <div>
+            <button id="btn-toggle-yolo" class="key-btn" style="padding:2px 5px; font-size:0.7rem; background:#333; color:#00d2ff; border-color:#00d2ff; margin-right:5px;">👁️ Toggle YOLO</button>
+            <button id="btn-restart" class="key-btn" style="padding:2px 5px; font-size:0.7rem; background:#333; color:#ff3366; border-color:#ff3366;">🔄 Restart AI</button>
           </div>
+        </h3>
+        <div style="display:flex; gap:10px; flex-direction:column;">
+            <div class="cam-container" style="height:auto;">
+              <h4 style="margin:5px 0; color:#00ff88;">Navigation (AprilTags)</h4>
+              <img id="video-feed" src="http://localhost:8080/video_feed" alt="Stream Offline" style="width:100%; border:1px solid #333;">
+            </div>
+            <div id="yolo-container" class="cam-container" style="height:auto; display:none;">
+              <h4 style="margin:5px 0; color:#00d2ff;">Conservation (YOLOv8)</h4>
+              <img id="video-feed-yolo" src="http://localhost:8080/video_feed_yolo" alt="Stream Offline" style="width:100%; border:1px solid #333;">
+            </div>
         </div>
         <div style="margin-top:10px; display:flex; gap:10px;">
           <button id="btn-snap" style="flex:1; padding:5px; background:#333; color:#fff; border:1px solid #555; cursor:pointer;">📸 Snapshot</button>
