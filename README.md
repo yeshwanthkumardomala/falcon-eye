@@ -1,4 +1,6 @@
-# 🦅 FalconEye | Autonomous Heritage Conservation AI
+# 🦅 FalconEye: Autonomous Heritage Conservation AI
+**World Robot Olympiad (WRO) 2026 - Future Innovators**
+*Theme: Cultural Heritage*
 
 <div align="center">
   <img src="https://img.shields.io/badge/WRO-2026_Future_Innovators-blue?style=for-the-badge&logo=robotics" alt="WRO" />
@@ -10,81 +12,85 @@
 
 <br>
 
-**FalconEye** is an AI-powered autonomous heritage conservation ecosystem designed by 12-14 year old innovators for the WRO (World Robot Olympiad) **Cultural Heritage** theme. It protects both **ancient cultural monuments** and the **natural biodiversity surrounding them**. 
+## 📑 1. Abstract & Introduction
+**FalconEye** is an AI-powered autonomous heritage conservation ecosystem engineered by 12-14 year old innovators. Designed specifically for the WRO Cultural Heritage theme, it aims to protect both **ancient cultural monuments** and the **natural biodiversity** surrounding them. 
 
-Instead of only monitoring structures, FalconEye continuously evaluates the complete environmental health of a location using our custom **Cultural Habitat Health Index (CHHI)** algorithm, proving that technology and culture can thrive together.
-
----
-
-## ✨ Key Features (WRO Edition)
-
-- 🧠 **Dual-AI Pipeline (Split-Screen)**: Runs `AprilTags` (for robot spatial navigation) and `YOLOv8` (for object detection) simultaneously. The dashboard features two live cameras side-by-side!
-- 🛟 **Debug/Reconnect System**: Includes a 1-click `🔄 Restart AI` button on the dashboard to instantly reload camera streams if the network drops.
-- 🌱 **Live CHHI Scoring**: The dashboard algorithmically decreases the score when litter/plastic is detected, and increases it when wildlife (birds) are detected.
-- 📈 **Real-Time Graphs**: Features an animated line chart powered by `Chart.js` to visualize ecosystem health drops instantly.
-- 🗺️ **Digital Twin Heatmap**: An HTML5 Canvas live-renders the robot's coordinates and generates a persistent foot-traffic heatmap.
-- 📍 **Mission Queuing**: Add multiple waypoints to the robot's queue; it automatically navigates and pops them off the list.
-- 📊 **CSV Data Logger**: Automatically logs every AI detection to a `.csv` file for Data Science analysis.
-- 🌗 **Accessible UI**: Includes a 1-click High-Contrast mode for visually impaired users.
+Instead of treating cultural monuments as isolated structures, FalconEye evaluates the complete environmental health of a location using our custom **Cultural Habitat Health Index (CHHI)** algorithm, proving that advanced robotics, cultural preservation, and ecological sustainability can thrive together.
 
 ---
 
-## 🚀 How to Run FalconEye on Your Laptop
+## 🏗️ 2. System Architecture
+The FalconEye project utilizes a decoupled edge-computing architecture to achieve maximum performance and zero-latency video streaming.
 
-This project uses a decoupled architecture. The heavy AI processing runs on the laptop, while the camera stream comes from a Raspberry Pi (or a simulated stream).
+*   **Edge Device (Raspberry Pi 3B+)**: Mounted on the robot. It captures raw camera frames and broadcasts them over the local WiFi network using a lightweight Python MJPEG streamer.
+*   **Base Station (Laptop)**: Runs a high-performance `FastAPI` server. It captures the network stream, runs complex multi-threaded AI processing, and serves a modern `Vue.js` / `Vite` dashboard to the user.
 
-### 1. Prerequisites
-- Python 3.10+
-- Node.js (v18+) & `npm`
-- A working webcam or Raspberry Pi MJPEG stream.
+---
 
-### 2. Installation Setup
-Clone the repository and run the automated startup script:
+## 🧠 3. Artificial Intelligence Pipeline
+To achieve autonomous navigation and environmental analysis simultaneously, FalconEye employs a **Dual-AI Pipeline** with isolated threading.
+
+1.  **Navigation (AprilTags)**: Using the `pupil_apriltags` library, the system detects physical markers placed around the heritage site. This allows the robot to calculate distance (`distance = sqrt(x² + y² + z²)`) and angle, generating a live 2D heat-map of its environment.
+2.  **Conservation (YOLOv8)**: Using the state-of-the-art YOLOv8 neural network (running on PyTorch), the system performs real-time object detection. It is trained to specifically identify:
+    *   `Litter / Plastic Waste` (Bottles, Cups) 🥤
+    *   `Wildlife` (Birds) 🕊️
+    *   `Human Activity` (Tourists / Persons) 🧍‍♂️
+
+*(Note: To prevent Segmentation Faults and C++ memory collisions during concurrent requests, the AI engine runs on a strictly isolated background thread with a Zero-Latency Duplicate Frame Dropper).*
+
+---
+
+## 📊 4. The Cultural Habitat Health Index (CHHI)
+The core innovation of FalconEye is the **CHHI Algorithm**. It dynamically scores the health of a heritage site in real-time.
+
+*   **Detection Penalties**: If YOLOv8 detects a plastic bottle, the backend immediately triggers an event to drop the CHHI score.
+*   **Detection Rewards**: If YOLOv8 detects local wildlife returning to the area, the CHHI score increases.
+*   **Data Logging**: Every single detection, along with its timestamp, confidence rating, and spatial coordinates, is logged to a `log.csv` file for long-term Data Science and environmental auditing.
+
+---
+
+## 💻 5. Dashboard & User Interface
+The command center is a Vue.js web application designed with modern glassmorphism aesthetics and extreme accessibility in mind.
+
+*   **Dual Split-Screen Cameras**: View the Navigation (AprilTags) feed and Conservation (YOLOv8) feed side-by-side. The YOLO feed can be toggled on/off to save bandwidth.
+*   **Live CHHI Graph**: A highly responsive `Chart.js` line graph dynamically plots the health of the ecosystem as the robot roams.
+*   **High-Contrast Mode**: Built-in accessibility toggles allow visually impaired operators to interact with the dashboard clearly.
+*   **Debug Reconnection**: A 1-click `Restart AI` button allows operators to instantly re-poll the camera feeds if the robot drives into a WiFi dead-zone.
+
+---
+
+## 🚀 6. Installation & Execution Guide
+
+### 🍓 Step 1: Robot Setup (Raspberry Pi 3B+)
+1. Install Python and OpenCV on your Raspberry Pi:
+   ```bash
+   sudo apt update
+   sudo apt install python3-opencv python3-pip
+   ```
+2. Copy the `pi/` directory from this repository to the Pi.
+3. Start the broadcaster:
+   ```bash
+   cd pi
+   python3 main.py
+   ```
+
+### 💻 Step 2: Base Station Setup (Laptop)
+Ensure you have Python 3.10+ and Node.js v18+ installed.
 
 ```bash
+# Clone the repository
 git clone https://github.com/yeshwanthkumardomala/falcon-eye.git
 cd falcon-eye
 
 # Make the startup script executable
 chmod +x start.sh
 
-# Start the system!
+# Run the automated boot sequence!
 ./start.sh
 ```
+*The `start.sh` script automatically builds the virtual environment, installs `requirements.txt`, installs Node modules, and launches both the backend and frontend simultaneously.*
 
-### 3. What `start.sh` Does Automatically:
-1. **Creates a Python Virtual Environment** (`venv`).
-2. **Installs Python Dependencies** (`pip install -r requirements.txt`).
-3. **Installs Frontend Dependencies** (`cd frontend && npm install`).
-4. **Boots the FastAPI AI Backend** on port `8080`.
-5. **Boots the Vite Frontend** on port `5173`.
-
-Once started, simply open your browser and navigate to:
-👉 **http://localhost:5173**
-
-### 4. 🍓 Raspberry Pi 3B+ Hardware Setup (Robot Camera)
-The FalconEye AI expects a live video stream from the robot over the local network. 
-
-1. Install Python and OpenCV on your Raspberry Pi 3B+:
-   ```bash
-   sudo apt update
-   sudo apt install python3-opencv python3-pip
-   ```
-2. Copy the `pi/` directory from this repository to your Raspberry Pi.
-3. Run the camera streamer on the Pi:
-   ```bash
-   cd pi
-   python3 main.py
-   ```
-4. The Pi will broadcast the raw camera feed to `http://<PI_IP_ADDRESS>:8000/video_feed`. The laptop backend automatically connects to this stream and processes the AI locally!
+Open your browser and navigate to: 👉 **http://localhost:5173**
 
 ---
-
-## 📸 Dashboard Preview & Demo
-
-*(Drop a GIF or screen recording of your dashboard here!)*
-
-> **WRO Judges Tip:** Grab a plastic bottle and hold it up to the camera. Watch the AI detect it via YOLOv8, flag it as "Litter/Plastic!", and instantly drop the CHHI Ecosystem score on the live graph!
-
----
-*Built with ❤️ for WRO Future Innovators*
+*Developed with ❤️ for the Future Innovators of WRO 2026*
