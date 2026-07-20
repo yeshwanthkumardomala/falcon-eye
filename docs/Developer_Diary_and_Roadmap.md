@@ -1,6 +1,18 @@
-# FalconEye: Developer Journey & Future Roadmap
+# FalconEye:# Developer Diary & Roadmap
 
-This document serves as a complete reference for how FalconEye was built, how to restart it, and where it can go in the future.
+**Project**: FalconEye AI - Autonomous Heritage Conservation Ecosystem
+**Goal**: Build a scalable, AI-powered rover and sensor network to protect cultural heritage sites and monitor surrounding biodiversity using the Cultural Habitat Health Index (CHHI).
+
+---
+
+## 📜 Phase 0: The True Vision (Heritage & Biodiversity)
+
+FalconEye is not just a robot—it is an ecosystem:
+1. **FalconNest AI Stations**: Fixed ESP32-CAM nodes monitoring specific zones.
+2. **FalconEye Rover**: The autonomous ground agent that patrols, validates alerts, and maps the environment using AprilTags.
+3. **The Brain (Laptop)**: Central compute node calculating the **CHHI (Cultural Habitat Health Index)** by processing video feeds for structural damage, litter, unauthorized human presence, and avian biodiversity (birds/nests).
+
+Our roadmap is tailored to building the software architecture required to support this massive, interconnected ecosystem.
 
 ---
 
@@ -74,3 +86,19 @@ FalconEye's architecture is deeply modular, meaning you can plug in new features
 ### 4. Advanced AI Object Detection
 *   **The Upgrade**: Add a Google Coral USB Accelerator to the Pi, or run YOLOv8 on the Laptop.
 *   **How it works**: Alongside scanning for AprilTags, the camera can detect "Person", "Chair", or "Box". This allows the robot to follow you around the room or dynamically avoid unmapped obstacles.
+
+### Phase 9: WRO Cultural Heritage & Biodiversity Expansion
+*   **Your Prompt**: *"Add WRO competition features... integrate 15 ideas... show CHHI score... YOLOv8 integration... Accessible UI... Mission Queue..."*
+*   **What We Did**: We massively expanded the project to fit the WRO "Robots over Culture" theme. We integrated **YOLOv8** to run simultaneously with the AprilTag detector. We created the **Cultural Habitat Health Index (CHHI)** which algorithmically penalizes the ecosystem score for litter (plastic bottles) and rewards it for wildlife (birds). We added a High-Contrast accessibility mode, an interactive Mission Queue, an HTML5 Digital Twin heatmap, and a `.csv` data-logger for environmental auditing.
+
+### Phase 10: The "Zero-Latency" Performance Overhaul
+*   **Your Prompt**: *"Reduce the latency in the camera as much as possible... the camera feed isnt proper and also its like glitching... fix that..."*
+*   **What We Did**: We encountered severe C++ segmentation faults and MJPEG image "tearing" (glitching) due to concurrent AI threading and bad byte-chunk boundaries. We completely rewrote the core AI pipeline:
+    1.  **Dual Split-Screen UI**: Added independent live camera streams (Navigation vs Conservation).
+    2.  **Thread-Safe AI Isolation**: Moved the YOLO and AprilTag inferences into a dedicated background worker thread that writes to global RAM buffers, completely eliminating PyTorch memory crashes.
+    3.  **Zero-Latency Duplicate Dropping**: Forced the AI thread to sleep instantly if the Raspberry Pi hasn't delivered a *new* frame, saving massive amounts of CPU and eliminating video lag entirely.
+    4.  **Robust MJPEG Chunking**: Increased the HTTP stream chunks from 4KB to 64KB and added strict byte-boundary verification to ensure broken JPEGs are discarded instead of rendered, fixing the "tearing" glitch.
+
+### Phase 11: Professional Engineering Deployment
+*   **Your Prompt**: *"Repair everything and push it into my github repo... write a proper readme... use the FalconEye Project Brief structure..."*
+*   **What We Did**: We ran a full system audit, created `.gitignore` and `requirements.txt` files, and automatically deployed the entire system to your public GitHub repository (`yeshwanthkumardomala/falcon-eye`). We completely formatted the GitHub `README.md` into a formal, highly-professional WRO Engineering Report detailing the FalconNest and FalconEye architecture, ensuring the project is 100% presentation-ready for the judges.
