@@ -23,30 +23,34 @@ class VideoStream:
             bytes_data = b''
             try:
                 r = requests.get(self.url, stream=True, timeout=5)
-                for chunk in r.iter_content(chunk_size=4096):
+                for chunk in r.iter_content(chunk_size=65536):
                     if not self.running:
                         break
                     bytes_data += chunk
                     a = bytes_data.find(b'\xff\xd8')
                     b = bytes_data.find(b'\xff\xd9')
+                    
                     if a != -1 and b != -1:
-                        jpg = bytes_data[a:b+2]
-                        bytes_data = bytes_data[b+2:]
-                        
-                        frame = cv2.imdecode(np.frombuffer(jpg, dtype=np.uint8), cv2.IMREAD_COLOR)
-                        if frame is not None:
-                            self.latest_frame = frame
+                        if a < b:
+                            jpg = bytes_data[a:b+2]
+                            bytes_data = bytes_data[b+2:]
                             
-                            current_time = time.time()
-                            self.latency = (current_time - self.last_frame_time) * 1000
-                            self.last_frame_time = current_time
-                            
-                            self.frame_count += 1
-                            elapsed = current_time - self.start_time
-                            if elapsed > 1.0:
-                                self.fps = self.frame_count / elapsed
-                                self.start_time = current_time
-                                self.frame_count = 0
+                            frame = cv2.imdecode(np.frombuffer(jpg, dtype=np.uint8), cv2.IMREAD_COLOR)
+                            if frame is not None and frame.shape == (480, 640, 3):
+                                self.latest_frame = frame
+                                
+                                current_time = time.time()
+                                self.latency = (current_time - self.last_frame_time) * 1000
+                                self.last_frame_time = current_time
+                                
+                                self.frame_count += 1
+                                elapsed = current_time - self.start_time
+                                if elapsed > 1.0:
+                                    self.fps = self.frame_count / elapsed
+                                    self.start_time = current_time
+                                    self.frame_count = 0
+                        else:
+                            bytes_data = bytes_data[a:]
             except Exception as e:
                 print(f"Stream reconnection: {e}")
                 time.sleep(1)
