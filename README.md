@@ -10,15 +10,16 @@
 
 <br>
 
-**FalconEye** is an AI-powered autonomous heritage conservation ecosystem designed by 12-14 year old innovators for the WRO competition. It protects both **cultural heritage sites** and the **natural biodiversity surrounding them**. 
+**FalconEye** is an AI-powered autonomous heritage conservation ecosystem designed by 12-14 year old innovators for the WRO (World Robot Olympiad) **Cultural Heritage** theme. It protects both **ancient cultural monuments** and the **natural biodiversity surrounding them**. 
 
-Instead of only monitoring monuments, FalconEye continuously evaluates the complete environmental health of a location using our custom **Cultural Habitat Health Index (CHHI)** algorithm.
+Instead of only monitoring structures, FalconEye continuously evaluates the complete environmental health of a location using our custom **Cultural Habitat Health Index (CHHI)** algorithm, proving that technology and culture can thrive together.
 
 ---
 
 ## ✨ Key Features (WRO Edition)
 
-- 🧠 **Dual-AI Pipeline**: Runs `AprilTags` (for robot spatial navigation) and `YOLOv8` (for object detection) simultaneously in a multi-threaded backend.
+- 🧠 **Dual-AI Pipeline (Split-Screen)**: Runs `AprilTags` (for robot spatial navigation) and `YOLOv8` (for object detection) simultaneously. The dashboard features two live cameras side-by-side!
+- 🛟 **Debug/Reconnect System**: Includes a 1-click `🔄 Restart AI` button on the dashboard to instantly reload camera streams if the network drops.
 - 🌱 **Live CHHI Scoring**: The dashboard algorithmically decreases the score when litter/plastic is detected, and increases it when wildlife (birds) are detected.
 - 📈 **Real-Time Graphs**: Features an animated line chart powered by `Chart.js` to visualize ecosystem health drops instantly.
 - 🗺️ **Digital Twin Heatmap**: An HTML5 Canvas live-renders the robot's coordinates and generates a persistent foot-traffic heatmap.
