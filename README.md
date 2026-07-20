@@ -1,6 +1,8 @@
-# 🦅 FalconEye: Autonomous Heritage Conservation AI
-**World Robot Olympiad (WRO) 2026 - Future Innovators**
-*Theme: Cultural Heritage*
+# 🦅 FalconEye Project Brief
+
+## Project Title
+**FalconEye – AI-Powered Autonomous Inspection & Monitoring Platform**
+*(WRO 2026 Future Innovators - Cultural Heritage Theme)*
 
 <div align="center">
   <img src="https://img.shields.io/badge/WRO-2026_Future_Innovators-blue?style=for-the-badge&logo=robotics" alt="WRO" />
@@ -12,85 +14,146 @@
 
 <br>
 
-## 📑 1. Abstract & Introduction
-**FalconEye** is an AI-powered autonomous heritage conservation ecosystem engineered by 12-14 year old innovators. Designed specifically for the WRO Cultural Heritage theme, it aims to protect both **ancient cultural monuments** and the **natural biodiversity** surrounding them. 
+## Executive Summary
+**FalconEye** is an autonomous robotic inspection system designed to continuously monitor environments using a combination of fixed AI monitoring stations and a mobile inspection rover. The system uses computer vision, environmental sensing, and autonomous navigation to detect events, assess conditions, and perform detailed inspections without constant human intervention.
 
-Instead of treating cultural monuments as isolated structures, FalconEye evaluates the complete environmental health of a location using our custom **Cultural Habitat Health Index (CHHI)** algorithm, proving that advanced robotics, cultural preservation, and ecological sustainability can thrive together.
+Unlike traditional surveillance systems that only record video, FalconEye analyzes the environment, identifies abnormalities (such as litter near ancient structures or tourist trespassing), and dispatches an autonomous rover to verify findings and collect additional information. 
 
----
-
-## 🏗️ 2. System Architecture
-The FalconEye project utilizes a decoupled edge-computing architecture to achieve maximum performance and zero-latency video streaming.
-
-*   **Edge Device (Raspberry Pi 3B+)**: Mounted on the robot. It captures raw camera frames and broadcasts them over the local WiFi network using a lightweight Python MJPEG streamer.
-*   **Base Station (Laptop)**: Runs a high-performance `FastAPI` server. It captures the network stream, runs complex multi-threaded AI processing, and serves a modern `Vue.js` / `Vite` dashboard to the user.
+While the platform is modular and scalable, it is uniquely optimized for **Heritage Site Preservation**—proving that robotics can protect our culture and the natural biodiversity surrounding it.
 
 ---
 
-## 🧠 3. Artificial Intelligence Pipeline
-To achieve autonomous navigation and environmental analysis simultaneously, FalconEye employs a **Dual-AI Pipeline** with isolated threading.
-
-1.  **Navigation (AprilTags)**: Using the `pupil_apriltags` library, the system detects physical markers placed around the heritage site. This allows the robot to calculate distance (`distance = sqrt(x² + y² + z²)`) and angle, generating a live 2D heat-map of its environment.
-2.  **Conservation (YOLOv8)**: Using the state-of-the-art YOLOv8 neural network (running on PyTorch), the system performs real-time object detection. It is trained to specifically identify:
-    *   `Litter / Plastic Waste` (Bottles, Cups) 🥤
-    *   `Wildlife` (Birds) 🕊️
-    *   `Human Activity` (Tourists / Persons) 🧍‍♂️
-
-*(Note: To prevent Segmentation Faults and C++ memory collisions during concurrent requests, the AI engine runs on a strictly isolated background thread with a Zero-Latency Duplicate Frame Dropper).*
+## Objectives
+* Develop a fully autonomous monitoring ecosystem.
+* Reduce manual inspection efforts for heritage site conservators.
+* Enable AI-assisted decision making.
+* Perform real-time environmental monitoring (Cultural Habitat Health Index).
+* Generate inspection reports automatically.
+* Support multiple inspection scenarios through interchangeable AI models.
 
 ---
 
-## 📊 4. The Cultural Habitat Health Index (CHHI)
-The core innovation of FalconEye is the **CHHI Algorithm**. It dynamically scores the health of a heritage site in real-time.
+## System Architecture
+FalconEye consists of two primary subsystems working in tandem:
 
-*   **Detection Penalties**: If YOLOv8 detects a plastic bottle, the backend immediately triggers an event to drop the CHHI score.
-*   **Detection Rewards**: If YOLOv8 detects local wildlife returning to the area, the CHHI score increases.
-*   **Data Logging**: Every single detection, along with its timestamp, confidence rating, and spatial coordinates, is logged to a `log.csv` file for long-term Data Science and environmental auditing.
+### 1. FalconNest AI Monitoring Station
+A fixed monitoring unit installed at strategic locations around the heritage site.
+* **Functions:** Continuous video monitoring, Motion detection, Environmental sensing, Event detection, Alert generation, Communication with the rover.
+* **Possible Hardware:** ESP32-CAM, Environmental sensors, Solar/battery power, Wi-Fi communication.
 
----
-
-## 💻 5. Dashboard & User Interface
-The command center is a Vue.js web application designed with modern glassmorphism aesthetics and extreme accessibility in mind.
-
-*   **Dual Split-Screen Cameras**: View the Navigation (AprilTags) feed and Conservation (YOLOv8) feed side-by-side. The YOLO feed can be toggled on/off to save bandwidth.
-*   **Live CHHI Graph**: A highly responsive `Chart.js` line graph dynamically plots the health of the ecosystem as the robot roams.
-*   **High-Contrast Mode**: Built-in accessibility toggles allow visually impaired operators to interact with the dashboard clearly.
-*   **Debug Reconnection**: A 1-click `Restart AI` button allows operators to instantly re-poll the camera feeds if the robot drives into a WiFi dead-zone.
+### 2. FalconEye Autonomous Rover
+A mobile robotic platform responsible for detailed, close-range inspection.
+* **Functions:** Autonomous navigation, Image capture, Close-range inspection, Environmental data collection, Obstacle avoidance, Report generation.
+* **Possible Hardware:** Raspberry Pi 3B+, Camera Module, STM32 microcontroller, Motor drivers, Ultrasonic sensors, IMU.
 
 ---
 
-## 🚀 6. Installation & Execution Guide
-
-### 🍓 Step 1: Robot Setup (Raspberry Pi 3B+)
-1. Install Python and OpenCV on your Raspberry Pi:
-   ```bash
-   sudo apt update
-   sudo apt install python3-opencv python3-pip
-   ```
-2. Copy the `pi/` directory from this repository to the Pi.
-3. Start the broadcaster:
-   ```bash
-   cd pi
-   python3 main.py
-   ```
-
-### 💻 Step 2: Base Station Setup (Laptop)
-Ensure you have Python 3.10+ and Node.js v18+ installed.
-
-```bash
-# Clone the repository
-git clone https://github.com/yeshwanthkumardomala/falcon-eye.git
-cd falcon-eye
-
-# Make the startup script executable
-chmod +x start.sh
-
-# Run the automated boot sequence!
-./start.sh
+## AI Pipeline
+```text
+Monitoring Station (FalconNest)
+        │
+Event Detection
+        │
+Mission Generation
+        │
+Autonomous Rover (FalconEye)
+        │
+Detailed Inspection
+        │
+AI Analysis (YOLOv8 + AprilTags)
+        │
+Inspection Report (CSV / Dashboard)
 ```
-*The `start.sh` script automatically builds the virtual environment, installs `requirements.txt`, installs Node modules, and launches both the backend and frontend simultaneously.*
 
-Open your browser and navigate to: 👉 **http://localhost:5173**
+---
+
+## Core Features
+
+### 👁️ Computer Vision (YOLOv8)
+* Motion detection
+* Object detection (Litter, Plastic Waste, Birds, Tourists)
+* Damage detection & Crack detection
+* Color analysis & Vegetation analysis
+* Wildlife observation
+
+### 🧭 Autonomous Navigation
+* **AprilTag Localization:** Millimeter-accurate spatial mapping.
+* Waypoint navigation
+* Obstacle avoidance
+* Mission planning & Queuing
+* Return-to-base capability
+
+### 🌡️ Environmental Monitoring
+* Cultural Habitat Health Index (CHHI) Algorithm
+* Temperature, Humidity, Air quality, Light intensity
+* Habitat condition scoring
+
+### 💻 Dashboard
+Provides a centralized command center for conservators:
+* Live dual-camera feeds (Navigation & Conservation)
+* Rover location & Digital Twin heatmap
+* Sensor values & Mission status
+* Event alerts & AI-generated reports
+
+---
+
+## Workflow
+1. **Environment** ➔ 2. **FalconNest detects activity** ➔ 3. **AI analyzes event** ➔ 4. **Mission created** ➔ 5. **Rover deployed** ➔ 6. **Navigation** ➔ 7. **Inspection** ➔ 8. **Data collection** ➔ 9. **AI processing** ➔ 10. **Report generated** ➔ 11. **Dashboard updated**.
+
+---
+
+## Applications
+
+### 🏛️ Heritage Preservation *(Primary)*
+* Structural inspection & Crack detection.
+* Visitor monitoring (detecting human activity in restricted archaeological zones).
+* Damage assessment and litter/waste management.
+
+### 🌿 Wildlife Conservation
+* Habitat monitoring & Bird nest observation.
+* Animal activity tracking & Vegetation assessment.
+
+### 🚜 Agriculture
+* Crop monitoring, Irrigation inspection, Disease detection, Field surveillance.
+
+### 🏫 Smart Campus
+* Security patrol, Infrastructure inspection, Asset monitoring.
+
+### 🏭 Industrial Inspection
+* Equipment monitoring, Warehouse inspection, Safety compliance, Preventive maintenance.
+
+---
+
+## Technologies
+* **Hardware:** Raspberry Pi 3B+, ESP32-CAM, STM32, Cameras, Environmental sensors, Motor drivers, Autonomous rover chassis.
+* **Software:** Python, C++, OpenCV, AprilTag (pupil-apriltags), YOLOv8 (PyTorch), Vue.js web dashboard, REST APIs (FastAPI), WebSockets.
+
+---
+
+## Innovation
+FalconEye combines fixed intelligent monitoring stations with autonomous robotic inspection, creating a **scalable inspection ecosystem** rather than a standalone robot. Its modular architecture allows the same platform to be deployed across multiple domains by changing only the AI models and mission logic, reducing development effort while expanding its range of applications.
+
+---
+
+## Future Enhancements
+* Multi-rover coordination (Swarm robotics)
+* Edge AI acceleration (Google Coral / NVIDIA Jetson)
+* Thermal imaging
+* LiDAR-based 3D mapping
+* Drone integration for aerial heritage scanning
+* Cloud analytics & Predictive maintenance
+* Voice interaction
+* Digital twin visualization in VR
+
+---
+
+## Expected Outcomes
+* Reduced manual inspection costs for historical societies.
+* Faster anomaly and vandalism detection.
+* Continuous autonomous monitoring of delicate monuments.
+* Improved decision support through AI data-logging.
+* Adaptable platform for conservation, heritage, industrial, and environmental applications.
+* Scalable architecture for future expansion.
 
 ---
 *Developed with ❤️ for the Future Innovators of WRO 2026*
