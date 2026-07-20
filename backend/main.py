@@ -71,18 +71,29 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-def generate_processed_frames():
-    import time
-    global latest_detections, latest_frame
-    while True:
+import threading
+import time
+
+global_jpeg_tags = None
+global_jpeg_yolo = None
+
+def ai_processing_thread():
+    global latest_detections, latest_frame, global_jpeg_tags, global_jpeg_yolo
+    last_processed_frame = None
+    while pi_stream.running:
         frame = pi_stream.get_frame()
-        if frame is None or getattr(frame, 'shape', None) != (480, 640, 3):
+        if frame is None or frame is last_processed_frame or getattr(frame, 'shape', None) != (480, 640, 3):
             time.sleep(0.01)
             continue
             
-        frame, detections = ai_engine.detect_and_draw(frame)
+        last_processed_frame = frame
+        frame_tags, frame_yolo, detections = ai_engine.detect_and_draw(frame)
+        if frame_tags is None:
+            time.sleep(0.01)
+            continue
+            
         latest_detections = detections
-        latest_frame = frame.copy()
+        latest_frame = frame_tags.copy()
         
         if detections:
             with open(csv_file, 'a', newline='') as f:
@@ -90,22 +101,33 @@ def generate_processed_frames():
                 for d in detections:
                     writer.writerow([time.time(), d['id'], round(d['distance'], 2), round(d['angle'], 2), round(d['confidence'], 2)])
         
-        cv2.putText(frame, f"FPS: {pi_stream.fps:.1f} | Latency: {pi_stream.latency:.1f}ms", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 255), 2)
+        cv2.putText(frame_tags, f"FPS: {pi_stream.fps:.1f} | Latency: {pi_stream.latency:.1f}ms", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 255), 2)
+        cv2.putText(frame_yolo, f"FPS: {pi_stream.fps:.1f} | Latency: {pi_stream.latency:.1f}ms", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 255), 2)
         
-        ret, buffer = cv2.imencode('.jpg', frame, [int(cv2.IMWRITE_JPEG_QUALITY), 80])
-        if not ret:
-            continue
-            
-        yield (b'--frame\r\n'
-               b'Content-Type: image/jpeg\r\n\r\n' + buffer.tobytes() + b'\r\n')
+        ret1, buf1 = cv2.imencode('.jpg', frame_tags, [int(cv2.IMWRITE_JPEG_QUALITY), 80])
+        ret2, buf2 = cv2.imencode('.jpg', frame_yolo, [int(cv2.IMWRITE_JPEG_QUALITY), 80])
+        
+        if ret1: global_jpeg_tags = buf1.tobytes()
+        if ret2: global_jpeg_yolo = buf2.tobytes()
 
-def generate_frames_sync():
-    for f in generate_processed_frames():
-        yield f
+# Start the dedicated AI worker thread to prevent C++ segmentation faults
+threading.Thread(target=ai_processing_thread, daemon=True).start()
+
+def generate_frames_sync(feed_type="tags"):
+    while True:
+        jpg_bytes = global_jpeg_tags if feed_type == "tags" else global_jpeg_yolo
+        if jpg_bytes is not None:
+            yield (b'--frame\r\n'
+                   b'Content-Type: image/jpeg\r\n\r\n' + jpg_bytes + b'\r\n')
+        time.sleep(0.02)
 
 @app.get("/video_feed")
 def video_feed():
-    return StreamingResponse(generate_frames_sync(), media_type="multipart/x-mixed-replace; boundary=frame")
+    return StreamingResponse(generate_frames_sync("tags"), media_type="multipart/x-mixed-replace; boundary=frame")
+    
+@app.get("/video_feed_yolo")
+def video_feed_yolo():
+    return StreamingResponse(generate_frames_sync("yolo"), media_type="multipart/x-mixed-replace; boundary=frame")
 
 @app.get("/download_report")
 def download_report():
