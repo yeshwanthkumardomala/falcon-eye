@@ -1,3 +1,4 @@
+<img width="1920" height="1080" alt="Screenshot from 2026-07-21 01-25-13" src="https://github.com/user-attachments/assets/193996eb-0d22-4774-ab30-643974f0c415" />
 # 🦅 FalconEye Project Brief
 
 ## Project Title
